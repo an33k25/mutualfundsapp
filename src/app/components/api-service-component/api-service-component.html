@@ -1,0 +1,89 @@
+<div class="api-service-container">
+  <div class="header">
+    <h1>Mutual Funds Explorer</h1>
+    <p>Search and explore mutual funds data</p>
+    </div>
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        (focus)="showSearchSuggestions()"
+        (blur)="hideSearchSuggestions()"
+        placeholder="Search mutual funds by name, fund house, or type (e.g., 'icici equity', 'large cap')..."
+        class="search-input"
+      />
+      <button
+        *ngIf="searchTerm"
+        (click)="clearSearch()"
+        class="clear-btn"
+        title="Clear search"
+      >
+        ×
+      </button>
+     <button class="back-btn"><a href=" "> Go Back </a></button>
+ 
+
+    <div class="search-info">
+      <span *ngIf="!isLoading && filteredMutualFunds.length > 0">
+        Showing {{ filteredMutualFunds.length }} of
+        {{ allMutualFunds.length }} mutual funds
+      </span>
+      <span
+        *ngIf="!isLoading && searchTerm && filteredMutualFunds.length === 0"
+      >
+        No funds found for "{{ searchTerm }}" - try different keywords
+      </span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading mutual funds data...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error">
+    <p>{{ error }}</p>
+    <button (click)="retry()" class="retry-btn">Retry</button>
+  </div>
+
+  <!-- Results Section -->
+  <div *ngIf="!isLoading && !error" class="results-section">
+    <!-- No Results -->
+    <div *ngIf="filteredMutualFunds.length === 0" class="no-results">
+      <p>No mutual funds found matching your search.</p>
+      <button (click)="clearSearch()" class="clear-search-btn">
+        Show All Funds
+      </button>
+    </div>
+
+    <!-- Paginated Results List -->
+    <div *ngIf="filteredMutualFunds.length > 0" class="results-list">
+      <div
+        *ngFor="let fund of paginatedFunds; trackBy: trackBySchemeCode"
+        class="fund-card"
+      >
+        <div class="fund-header">
+          <h3 class="fund-name">{{ fund.schemeName }}</h3>
+          <span class="scheme-code">{{ fund.schemeCode }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+  </div>
+</div>
